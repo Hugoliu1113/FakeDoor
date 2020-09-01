@@ -1,0 +1,10 @@
+D:\Test\CShap\LittleTools\FakeBarcodePDA\bin\Debug\FakeBarcodePDA.exe.config
+D:\Test\CShap\LittleTools\FakeBarcodePDA\bin\Debug\FakeBarcodePDA.exe
+D:\Test\CShap\LittleTools\FakeBarcodePDA\bin\Debug\FakeBarcodePDA.pdb
+D:\Test\CShap\LittleTools\FakeBarcodePDA\obj\Debug\FakeDoor.csprojAssemblyReference.cache
+D:\Test\CShap\LittleTools\FakeBarcodePDA\obj\Debug\FakeDoor.MainWindows.resources
+D:\Test\CShap\LittleTools\FakeBarcodePDA\obj\Debug\FakeBarcodePDA.Properties.Resources.resources
+D:\Test\CShap\LittleTools\FakeBarcodePDA\obj\Debug\FakeDoor.SettingWindows.resources
+D:\Test\CShap\LittleTools\FakeBarcodePDA\obj\Debug\FakeDoor.csproj.GenerateResource.cache
+D:\Test\CShap\LittleTools\FakeBarcodePDA\obj\Debug\FakeBarcodePDA.exe
+D:\Test\CShap\LittleTools\FakeBarcodePDA\obj\Debug\FakeBarcodePDA.pdb
