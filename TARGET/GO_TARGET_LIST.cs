@@ -106,6 +106,10 @@ namespace FakeDoor
         }
         #endregion
 
+        /// <summary>
+        /// 將List賦蓋目前物件
+        /// </summary>
+        /// <param name="_list">GO_TARGET_LIST 實例</param>
         public void GoSetList(GO_TARGET_LIST _list) {
             _ip_port_list = _list._ip_port_list;
         }

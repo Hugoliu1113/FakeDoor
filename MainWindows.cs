@@ -16,18 +16,18 @@ namespace FakeDoor
 
         public MainWindows() {
             InitializeComponent();
-            target_list = new GO_TARGET_LIST();//TODO
+            target_list = new GO_TARGET_LIST(); //TODO 取得設定值
+            MessageBoard.Clear();   //TODO 取得設定值
         }
 
 
         //輸入窗Enter事件
         private void ProjectionBox_Enter(object sender, EventArgs e) {
-            
+            SendButton_Click(sender, e);
         }
 
         //Send按鈕事件
         private void SendButton_Click(object sender, EventArgs e) {
-
         }
 
         //Setting按鈕事件

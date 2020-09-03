@@ -46,8 +46,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="GO_IP_PORT.cs" />
-    <Compile Include="GO_TARGET_LIST.cs" />
+    <Compile Include="TARGET\GO_IP_PORT.cs" />
+    <Compile Include="TARGET\GO_TARGET_LIST.cs" />
+    <Compile Include="TCP\GO_TCP_IPORT.cs" />
     <Compile Include="MainWindows.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -62,7 +63,7 @@
     <Compile Include="SettingWindows.Designer.cs">
       <DependentUpon>SettingWindows.cs</DependentUpon>
     </Compile>
-    <Compile Include="TCP_GO.cs" />
+    <Compile Include="TCP\GO_TCP.cs" />
     <EmbeddedResource Include="MainWindows.resx">
       <DependentUpon>MainWindows.cs</DependentUpon>
     </EmbeddedResource>
