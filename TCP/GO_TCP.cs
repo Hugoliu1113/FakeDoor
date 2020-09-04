@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace FakeDoor
@@ -45,7 +46,7 @@ namespace FakeDoor
                     }
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return ex.Message;
             }
@@ -70,7 +71,7 @@ namespace FakeDoor
 
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return false;
             }
@@ -85,12 +86,12 @@ namespace FakeDoor
 
             try
             {
-                foreach(TcpClient _tcp in goTcpClient)
+                foreach (TcpClient _tcp in goTcpClient)
                 {
                     _tcp.Close();
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return false;
             }
@@ -99,11 +100,52 @@ namespace FakeDoor
         }
 
         /// <summary>
+        /// 開啟TCP Server
+        /// </summary>
+        /// <param name="_port">Server Port</param>
+        /// <returns>是否成功開啟</returns>
+        public bool GoOpenServer(int _port) {
+            try
+            {
+                TcpListener tcp_server = new TcpListener(_port);
+                tcp_server.Start();
+                goTcpListener.Add(tcp_server);
+                Thread server_thread = new Thread(new ThreadStart()); 
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// 關閉TCP Server
+        /// </summary>
+        /// <returns>是否成功關閉</returns>
+        public bool GoCloseServer() {
+            try
+            {
+                foreach (TcpListener _server in goTcpListener)
+                {
+                    _server.Stop();
+                }
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+            return true;
+        }
+
+        /// <summary>
         /// 當TCP_GO收到資料時
         /// </summary>
-        /// <param name="GetMessageMethod"></param>
-        public void GoMessageGet(Delegate GetMessageMethod) {
+        /// <param name="get_message_method"></param>
+        public void GoMessageGet(Delegate get_message_method) {
             //TODO
+
         }
 
     }
