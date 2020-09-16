@@ -26,6 +26,7 @@ namespace FakeDoor
         //OK按鈕事件
         private void OkButton_Click(object sender, EventArgs e) {
             proto_list.GoSetList(target_list);
+            this.DialogResult = DialogResult.OK;
             this.Close();
         }
 

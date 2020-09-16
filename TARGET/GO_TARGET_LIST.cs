@@ -24,6 +24,10 @@ namespace FakeDoor
             }
         }
 
+        public int GoCount() {
+            return _ip_port_list.Count;
+        }
+
         #region Method GoAdd
         /// <summary>
         /// 新增IP&Port進入表

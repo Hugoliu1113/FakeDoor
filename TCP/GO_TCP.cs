@@ -1,6 +1,7 @@
 ﻿using FakeBarcodePDA;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Sockets;
 using System.Text;
@@ -11,11 +12,14 @@ namespace FakeDoor
 {
     public class GO_TCP
     {
-        private List<TcpClient> goTcpClient;
+        private List<TcpClient> goTcpClient = new List<TcpClient>();
 
-        private List<TcpListener> goTcpListener;
+        private List<TcpListener> goTcpListener = new List<TcpListener>();
 
         private List<GO_TCP_IPORT> list_iport = new List<GO_TCP_IPORT>();
+
+        private delegate void go_listen_message_event(string s);
+        private event go_listen_message_event Listen_message_event;
 
         /// <summary>
         /// 設定IP&Port
@@ -23,7 +27,8 @@ namespace FakeDoor
         /// <param name="_s"></param>
         /// <returns>無誤回傳空字串，錯誤回傳ErrorCode。</returns>
         public string GoSetIpPort(string[] _s) {
-            List<int> port_index = new List<int>();
+            List<int> port_index = new List<int>(); //計數器(port)所在陣列。
+            list_iport.Clear();
 
             try
             {
@@ -59,14 +64,22 @@ namespace FakeDoor
         /// </summary> 
         /// <returns>是否完成</returns>
         public bool GoConnact() {
+            if (list_iport.Count < 1)
+                return false;
 
             try
             {
                 foreach (GO_TCP_IPORT go_tcp in list_iport)
                 {
                     TcpClient _tcpClient = new TcpClient();
-                    _tcpClient.ConnectAsync(go_tcp.go_ip, go_tcp.go_port);
+                    _tcpClient.Connect(go_tcp.go_ip, go_tcp.go_port);
+                    if (_tcpClient.Connected)
+                    {
+                        //NetworkStream nws = _tcpClient.GetStream();
 
+                        //byte[] write_buffer = Encoding.ASCII.GetBytes("A123B456");
+                        //nws.Write(write_buffer, 0, write_buffer.Length);
+                    }
                     goTcpClient.Add(_tcpClient);
 
                 }
@@ -83,6 +96,8 @@ namespace FakeDoor
         /// </summary>
         /// <returns>是否完成</returns>
         public bool GoDisConnact() {
+            if (goTcpClient == null)
+                return false;
 
             try
             {
@@ -100,6 +115,38 @@ namespace FakeDoor
         }
 
         /// <summary>
+        /// 送出輸入的訊息給所有已連接TCP_Client
+        /// </summary>
+        /// <param name="_text">訊息</param>
+        /// <returns>成功數</returns>
+        public int GoSend(string _text) 
+        {
+            int success = 0;
+
+            try
+            {
+                foreach (TcpClient _tcp_client in goTcpClient)
+                {
+                    NetworkStream nws = _tcp_client.GetStream();
+                    byte[] write_buffer = Encoding.ASCII.GetBytes(_text);
+                    nws.Write(write_buffer,0, write_buffer.Length);
+
+                    byte[] Write_buffer = new byte[256];
+                    Int32 bytes = nws.Read(Write_buffer, 0, Write_buffer.Length);
+                    String responseData = responseData = System.Text.Encoding.ASCII.GetString(Write_buffer, 0, bytes);
+                    nws.Close();
+                    success += 1;
+               }
+            }
+            catch (Exception ex)
+            {
+
+            }
+            
+            return success;
+        }
+
+        /// <summary>
         /// 開啟TCP Server
         /// </summary>
         /// <param name="_port">Server Port</param>
@@ -108,9 +155,9 @@ namespace FakeDoor
             try
             {
                 TcpListener tcp_server = new TcpListener(_port);
-                tcp_server.Start();
+                Thread server_thread = new Thread(new ParameterizedThreadStart(GoListener));
+                server_thread.Start(tcp_server);
                 goTcpListener.Add(tcp_server);
-                Thread server_thread = new Thread(new ThreadStart()); 
             }
             catch (Exception ex)
             {
@@ -118,6 +165,35 @@ namespace FakeDoor
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// TCP_Server_開啟
+        /// </summary>
+        /// <param name="_tcplistener"></param>
+        private void GoListener(Object _tcplistener) {
+            TcpListener tcplistener = (TcpListener)_tcplistener;
+            tcplistener.Start();
+            while (true)
+            {
+                NetworkStream ns = tcplistener.AcceptTcpClient().GetStream();
+                //ns.ReadTimeout = 6000;
+                //ns.WriteTimeout = 6000;
+                byte[] Read_buffer = new byte[256];
+                string getmessage = "";
+                int i = 0;
+
+                while ((i = ns.Read(Read_buffer, 0, Read_buffer.Length)) != 0)
+                {
+                    getmessage = System.Text.Encoding.ASCII.GetString(Read_buffer, 0, i);
+                    Console.WriteLine("{0}", getmessage);
+                }
+
+                if(getmessage.Length > 0)
+                {
+                    Listen_message_event.Invoke(getmessage);
+                }
+            }
         }
 
         /// <summary>
@@ -140,13 +216,12 @@ namespace FakeDoor
         }
 
         /// <summary>
-        /// 當TCP_GO收到資料時
+        /// 當TCP_GO收到資料時，執行傳入方法。
         /// </summary>
-        /// <param name="get_message_method"></param>
-        public void GoMessageGet(Delegate get_message_method) {
-            //TODO
-
+        /// <param name="get_message_method">傳入方法</param>
+        /// <param name="input">傳入參數，第一個必須為字串</param>
+        public void GoSetMessageGetEvent(Action<string> get_message_method) {
+            Listen_message_event += new go_listen_message_event(get_message_method);
         }
-
     }
 }
